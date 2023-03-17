@@ -38,21 +38,39 @@ app.get("/gettodo", function (req, res) {
 })
 app.post("/deletetodo", function (req, res) {
     let index = req.body.id;
-        console.log(index);
     fs.readFile("./data.txt", "utf-8", function (err, data) {
-
         let todos = JSON.parse(data);
         for (let i = 0; i < todos.length; i++) {
-            if (todos[i].id === index) {
-                todos.splice(i, 1);
+            if (todos[i].id == index) {
+               todos.splice(i, 1);
+                fs.writeFile("./data.txt", JSON.stringify(todos), function (err, data) {
+                    res.end();
+                });
+                return;
             }
         }
-        fs.writeFile("./data.txt", JSON.stringify(todos), function (err, data) {
-            res.end();
-        });
+
     });
 })
 
+app.post("/edittodo", function (req, res) {
+    let index = req.body.id;
+    let editedvalue = req.body.value;
+    fs.readFile("./data.txt", "utf-8", function (err, data) {
+        let todos = JSON.parse(data);
+        for (let i = 0; i < todos.length; i++) {
+           // console.log("___Edit----" + index + "inside for Check"+ editedvalue);
+            if (todos[i].id == index) {
+              
+               todos[i].task = editedvalue;
+                fs.writeFile("./data.txt", JSON.stringify(todos), function (err, data) {
+                    res.end();
+                });
+            }
+        }
+
+    });
+})
 
 app.listen(port, () => {
     console.log("Server is running at 3000");
